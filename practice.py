@@ -2,12 +2,8 @@
 # dict = {"key":"item"}
 # dog_1 = {"name":"Castle", "age":5, "breed":"Golden Retriever"}
 # dog_2 = {"name":"Blessing", "age":5, "breed":"Golden Retriever"}
-#
 # dog_1["color"] = "gold"
-#
 # dog_1["age"] = 6
-#
-#
 # myString = "Castle"
 
 def verify_identity(dict):
@@ -27,8 +23,44 @@ def str_to_dict(s):
         position += 1
     return myDict
 
-
-class Dog:
-    def __init__(self, name):
+class Pet:
+    def __init__(self, name, energy = 0, happiness = 0):
         self.name = name
+        self.energy = energy
+        self.happiness = happiness
 
+    def __repr__(self):
+        return f'Pet(name={self.name}, energy={self.energy}, happiness={self.happiness}, weight={self.weight})'
+
+    def __str__(self):
+        return f"{self.name} is {self.energy} with {self.happiness} happiness."
+
+    def health(self, bcs):
+        "returns pet's health based upon bcs input"
+        self.bcs = bcs
+        if bcs < 6:
+            self.weight = 'healthy'
+            self.energy += 1
+        else:
+            self.weight = 'unhealthy'
+            self.energy -=1
+        return self.weight, self.energy
+
+    def feed(self):
+        "every time function is run, pet is fed"
+        self.energy += 1
+        return self.energy
+
+    def play(self):
+        "every time function is run, pet gets to play."
+        self.energy -= 1
+        self.happiness += 1
+        return self.energy, self.happiness
+
+    def check_energy(self):
+        "checks pet's energy."
+        print("Your pet's energy is {self.energy}.")
+
+    def check_happiness(self):
+        "checks pet's happiness."
+        print("Your pet's happiness is {self.happiness}.")
