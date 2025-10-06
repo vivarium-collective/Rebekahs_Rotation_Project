@@ -1,6 +1,8 @@
 from cobra.io import load_model
 from pprint import pprint
 
+from cobra_practice_met_and_rxn import carbon_sources
+
 def load():
     model = load_model("textbook")
     solutions = model.optimize()
@@ -17,11 +19,12 @@ def met_info(reaction, model, solutions): # this function is not successfully cr
                 met_info_dict["exchange"] = rxn.id  # reaction id
                 met_info_dict["formula"] = met.formula  # metabolite formula
                 met_info_dict["flux"] = solutions.fluxes[rxn.id]  # solution fluxes indexed at each reaction id
-    return met_info_dict, rxn.id, met.formula  #innermost dictionary
 
-def find_fluxes(solutions):
+    return met_info_dict, rxn.id  #innermost dictionary
+
+def find_fluxes(model, solutions):
     "creates and returns a list of consumed fluxes in model organism"
-    # Perhaps there is only one relevant exchange rxn here.
+
     consumed_fluxes = []
     for i in solutions.to_frame().index:
         if solutions.fluxes[i] < 0:
@@ -29,12 +32,14 @@ def find_fluxes(solutions):
     return consumed_fluxes
 
 def make_fluxes_dict(model, solutions): # passes met_info through
-    "creates a dictionary with exchange reaction metabolite info"
-    consumed_fluxes = find_fluxes(solutions)
+    "creates a dictinoary with exchange reaction metabolite info"
+
+    consumed_fluxes = find_fluxes(model, solutions)
     exchange_met = {}
+
     for reaction_id in consumed_fluxes:
         reaction = model.reactions.get_by_id(reaction_id)
-        met_info_dict, rxn_id, met_formula = met_info(reaction, model, solutions)  # passing function through
+        met_info_dict, rxn_id = met_info(reaction, model, solutions)  # passing function through
         exchange_met[rxn_id] = met_info_dict
     # pprint(f"This is what classify_met uses: {exchange_met}") # this dictionary is populating just fine
     return exchange_met
@@ -42,38 +47,43 @@ def make_fluxes_dict(model, solutions): # passes met_info through
 def make_dict(dict_1, dict_2):
     "creates and returns a parent dictionary with two nested dictionaries"
     merged_dict = {**dict_1, **dict_2}
+    pprint(f' printing from make_dict function {merged_dict}')
     return merged_dict
 
-def classify_met(model, solutions): # the problem is that we're overwriting sugars somewhere
+def classify_met(model, solutions): # i think the problem is here. Not adding anything to dicts
     "Creates two dictionaries from nested dictionary with exchange rxn metabolite info"
+    count = 0
     exchange_met = make_fluxes_dict(model, solutions) # creates exchange_met dictionary
 
-    sugars = {"Sugars": {}}
-    amino_acids = {"Amino Acids": {}}
+    sugars = {"Sugar": {}}
+    amino_acids = {"Amino Acid": {}}
 
     for key, value in exchange_met.items():
         if "formula" in value:
-            formula = value["formula"]
-            if "formula" in value:
-                if all(elem in formula for elem in ['C', 'H', 'O']):
-                    sugars["Sugars"][key] = value
-            if "formula" in value:
-                if all(elem in formula for elem in ['C', 'H', 'O', 'N']):
-                    amino_acids["Amino Acids"][key] = value
-    carbon_sources = make_dict(amino_acids, sugars)
-    return carbon_sources
+            pprint(value["formula"])
+
+    for key, value in exchange_met.items():
+        if "formula" in value:
+            if all(elem in value["formula"] for elem in ['C', 'H', 'O']):
+                sugars["Sugar"][key] = value
+                count +=1
+
+    for key, value in exchange_met.items():
+        if "formula" in value:
+            if all(elem in value["formula"] for elem in ['C', 'H', 'O', 'N']):
+                amino_acids["Amino Acid"][key] = value
+    print(count)
+    # carbon_sources = make_dict(amino_acids, sugars)
+    return sugars, amino_acids
 
 def main():
     "calls functions"
     model, solutions = load()
-    carbon_sources = classify_met(model, solutions)
-    pprint(carbon_sources)
-    return carbon_sources
+    sugars, amino_acids = classify_met(model, solutions)
+    # pprint(f'We have {len(sugars)} in nested sugars.')
+    # pprint(f'We have {len(amino_acids)} nested amino acids.')
+    carbon_sources = make_dict(sugars, amino_acids)
+    # return carbon_sources
 
 if __name__ == "__main__":
     main()
-
-# Results
-# There is only one relevant carbon sources involved in an exchange reaction in this organism.
-# It is a sugar.
-# There are no amino acids involved in exchange reactions in this organism.
