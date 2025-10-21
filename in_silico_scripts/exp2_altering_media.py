@@ -18,27 +18,27 @@
 
 
 from cobra.io import load_model
-from in_silico_functions.flux_analysis import (exchange_fluxes, analyze_fluxes,
-                                               plot_fluxes, load_model)
+from in_silico_functions.flux_analysis import (change_media, plot_fluxes)
+
+from in_silico_functions.carbon_sources import (load, classify_met)
+
+from pprint import pprint
+
 
 def main():
-    model = load_model("iJO1366")
-    solution = model.optimize()
-    with model:  # do not change model outside of "with" statement
-        # alter growth media
-        media = model.medium
-        media["EX_glc__D_e"] = 0.00 # enter an exchange reaction and flux value to alter growth media
-        model.medium = media
-        new_solution = model.optimize()
-        print(new_solution.fluxes["EX_glc__D_e"])
-        print(new_solution.status)
-    pos_flux, neg_flux, no_rxn = analyze_fluxes(exchange_fluxes(model, new_solution))
-    all_fluxes = {**pos_flux, **neg_flux} # only includes positive and negative fluxes
+    model, solutions = load("iJO1366")
+    # first, change media
+
+    all_fluxes = change_media(model, 0.00, "EX_glc__D_e")
 
     plot_fluxes(all_fluxes)
 
+    # second, see if carbon source has changed
+    carbon_sources = classify_met(model, solutions)
+    pprint(carbon_sources)
+    return carbon_sources
+
 if __name__ == "__main__":
     main()
-
 
 # result: when the media is changed, metabolite availability changes and the model organism cannot grow (or must find alternative food sources).
