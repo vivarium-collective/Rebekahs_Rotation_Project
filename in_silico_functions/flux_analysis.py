@@ -36,7 +36,7 @@ def change_media(model, value = float, ex_rxn = str):
     with model:  # do not change model outside of "with" statement
         # alter growth media
         media = model.medium
-        media["EX_glc__D_e"] = value  # enter an exchange reaction and flux value to alter growth media
+        media[ex_rxn] = value  # enter an exchange reaction and flux value to alter growth media
         model.medium = media
         new_solution = model.optimize()
         print(new_solution.fluxes[ex_rxn])
@@ -56,7 +56,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# tomorrow, plot exchange reactions against values so that we can identify how gene KOs change flux values for diff exchanges
 
