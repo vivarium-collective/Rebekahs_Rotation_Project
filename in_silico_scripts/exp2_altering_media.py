@@ -13,9 +13,7 @@
 # - Approach: determine what e. coli is eating by plotting exchange reactions (glucose, lactose, O2, etc.)
 #           against fluxes. Measure flux levels with diff KOs to determine which pathways are used when
 
-
 # Pos control: rpos (stress response)
-
 
 from cobra.io import load_model
 from in_silico_functions.flux_analysis import (change_media, plot_fluxes)

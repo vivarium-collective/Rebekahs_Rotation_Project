@@ -1,7 +1,7 @@
-from cobra.io import load_model
 from pprint import pprint
+from cobra.io import load_model
 
-def load(s):
+def load(s = "textbook"):
     model = load_model(s)
     solutions = model.optimize()
     return model, solutions
@@ -66,7 +66,7 @@ def classify_met(model, solutions): # the problem is that we're overwriting suga
 def main():
     "calls functions"
 
-    model, solutions = load("textbook")
+    model, solutions = load()
     carbon_sources = classify_met(model, solutions)
     pprint(carbon_sources)
     return carbon_sources
