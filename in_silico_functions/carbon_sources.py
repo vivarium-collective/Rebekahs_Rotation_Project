@@ -9,10 +9,9 @@ def load(s = "textbook"):
 def met_info(reaction, model, solutions): # this function is not successfully creating a dict
     """creates a dictionary with rxn values for three categories (exchange rxns, formulas, and fluxes) using a reaction (or list of reactions) as an input parameter"""
     met_info_dict = {}
-    for met in reaction.metabolites:  # same operation as "model.metabolites"
+    for met in reaction.metabolites:
         # met = specific metabolite
-        for rxn in met.reactions:  # same operation as "variable.reactions,"
-            # rxn = specific reaction
+        for rxn in met.reactions:
             if rxn.id in model.exchanges:
                 met_info_dict["exchange"] = rxn.id  # reaction id
                 met_info_dict["formula"] = met.formula  # metabolite formula
@@ -73,8 +72,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# Results
-# There is only one relevant carbon sources involved in an exchange reaction in this organism.
-# It is a sugar.
-# There are no amino acids involved in exchange reactions in this organism.
